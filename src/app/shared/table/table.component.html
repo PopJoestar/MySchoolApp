@@ -1,0 +1,79 @@
+<p-toast></p-toast>
+
+<div class="card">
+  <p-toolbar styleClass="p-mb-4">
+    <ng-template pTemplate="left">
+      <button pButton pRipple label="New" icon="pi pi-plus" class="p-button-success p-button-sm"></button>
+      <button pButton pRipple label="Delete" icon="pi pi-trash"
+        class="p-button-danger p-button-sm another-button"></button>
+    </ng-template>
+
+    <ng-template pTemplate="right">
+      <p-fileUpload class="import-button" mode="basic" accept="image/*" [maxFileSize]="1000000" label="Import"
+        chooseLabel="Import" class="p-mr-2 p-d-inline-block" styleClass="dark-panel"></p-fileUpload>
+    </ng-template>
+  </p-toolbar>
+
+  <p-table #table [value]="data" sortMode="multiple" [multiSortMeta]="multiSortMeta" [paginator]="true" [columns]="cols"
+    [rows]="10" [showCurrentPageReport]="true" styleClass="p-datatable-responsive-demo p-datatable"
+    currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries" [rowsPerPageOptions]="[10,25,50]">
+    <ng-template pTemplate="caption">
+      <div class="table-header">
+        <span class="p-input-icon-left">
+          <i class="pi pi-search"></i>
+          <input pInputText type="text" (input)="table.filterGlobal($event.target.value, 'contains')"
+            placeholder="Global Search" />
+        </span>
+      </div>
+    </ng-template>
+
+    <ng-template pTemplate="header" let-columns>
+      <tr>
+        <th style="width: 3rem">
+          <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+        </th>
+        <th *ngFor="let col of columns" [pSortableColumn]="col.field">
+          {{col.header}}
+          <p-sortIcon [field]="col.field"></p-sortIcon>
+        </th>
+        <th pSortableColumn="inventoryStatus" *ngIf="enableStatus">
+          Status
+          <p-sortIcon field="inventoryStatus"></p-sortIcon>
+        </th>
+        <th *ngIf="enableReporting"></th>
+        <th></th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-item let-columns="columns" let-rowIndex="rowIndex">
+      <tr>
+        <td>
+          <p-tableCheckbox [value]="item"></p-tableCheckbox>
+        </td>
+        <td *ngFor="let col of columns">
+          {{item[col.field]}}
+        </td>
+        <td *ngIf="enableStatus">
+          <p-toggleButton onLabel="PRESENT" offLabel="ABSENT" [(ngModel)]="status[rowIndex]"
+            styleClass="p-button-sm p-button-danger">
+          </p-toggleButton>
+        </td>
+        <td *ngIf="enableReporting"><button pButton label="Report"
+            class="p-button-outlined p-button-primary p-button-sm "></button></td>
+        <td>
+          <button pButton pRipple icon="pi pi-eye" class="p-button-rounded p-button-info "
+            (click)="viewItem(item)"></button>
+          <button pButton pRipple icon="pi pi-pencil" class="p-button-rounded p-button-success another-iconButton "
+            (click)="editItem(item)"></button>
+          <button pButton pRipple icon="pi pi-trash" class="p-button-rounded p-button-warning another-iconButton"
+            (click)="deleteItem(item)"></button>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+
+  <p-dialog [(visible)]="displayDialog">
+    <app-student-edit></app-student-edit>
+  </p-dialog>
+</div>
+
+<p-confirmDialog [style]="{width: '450px'}"></p-confirmDialog>
